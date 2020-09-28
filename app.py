@@ -82,16 +82,16 @@ def makerequest():
     pd_consult = DataFrame([data_consult],columns=["GENERO","EDAD","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16"])
     prediction = model.predict(pd_consult)
     pred = int(np.array2string(prediction)[1])
-    ans
+    ans = ""
     if pred == 0:
-        ans = "Sentado"
+        ans = "Otros"
     if pred == 1:
         ans = "Sentado"
     if pred == 2:
-        ans = "Sentado"
+        ans = "Saltando"
     if pred == 3:
-        ans = "Sentado"
-    return jsonify(actividad="sentado")
+        ans = "Caminando"
+    return jsonify(actividad=ans)
 
 if __name__ == '__main__':
     modelfile = 'models/final_prediction.pickle'
