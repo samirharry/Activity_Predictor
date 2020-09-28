@@ -1,0 +1,11 @@
+Genero
+	hombre 0
+	mujer 1
+Edad
+	joven 0
+	adulto 1
+Actividad
+	Sentado 1
+	Saltando 2
+	Caminando 3
+	Otros 0
