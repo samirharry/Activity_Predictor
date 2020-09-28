@@ -1,10 +1,13 @@
 from flask import Flask, request, redirect, url_for, flash, jsonify
 from flask_cors import CORS, cross_origin
 import numpy as np
+import math
 import csv
 import io
+from pandas import DataFrame
 import pickle as p
 import json
+from scipy.ndimage import gaussian_filter1d
 
 
 app = Flask(__name__)
@@ -29,7 +32,7 @@ def savedata():
     data = request.get_json()
     accelerometer_data = data["accels"]
     len_data = len(accelerometer_data)
-    print(len_data)
+    print(data)
     len_file = 0
     with open(raw_data_x_filename,newline='') as File:
         reader = csv.reader(File,dialect='excel')
@@ -57,14 +60,29 @@ def savedata():
 @app.route('/api/guess',methods=['POST'])
 @cross_origin()
 def makerequest():
+    sigma = 3
     data = request.get_json()
+    print(data)
     accelerometer_data = data["accels"]
-    len_data = len(accelerometer_data)  
-    for i in range(len_data):
-        print(accelerometer_data[0]["x"])
-        print(accelerometer_data[0]["y"])
-        print(accelerometer_data[0]["z"])
-    return jsonify(data)
+    rms_data = []
+    for el in accelerometer_data:
+        rms_data.append(math.sqrt( pow(el['x'],2) + pow(el['y'],2) + pow(el['z'],2) ))
+    gaussian_data = gaussian_filter1d(rms_data,sigma)
+    fft_data_real = np.fft.fft(gaussian_data).real.tolist()
+    fft_data_imag = np.fft.fft(gaussian_data).imag.tolist()
+    fft_data_mod = []
+    for i in range(len(fft_data_real)):
+        fft_data_mod.append(math.sqrt(pow(fft_data_real[i],2) + pow(fft_data_imag[i],2)))
+    fft_data_mod = fft_data_mod[:16]
+    data_consult = []
+    data_consult.append(data["genero"])
+    data_consult.append(data["edad"])
+    for el in fft_data_mod:
+        data_consult.append(el)
+    pd_consult = DataFrame([data_consult],columns=["GENERO","EDAD","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16"])
+    prediction = model.predict(pd_consult)
+    print(type(prediction))
+    return jsonify(actividad="sentado")
 
 if __name__ == '__main__':
     modelfile = 'models/final_prediction.pickle'
