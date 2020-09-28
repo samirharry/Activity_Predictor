@@ -81,7 +81,16 @@ def makerequest():
         data_consult.append(el)
     pd_consult = DataFrame([data_consult],columns=["GENERO","EDAD","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16"])
     prediction = model.predict(pd_consult)
-    print(type(prediction))
+    pred = int(np.array2string(prediction)[1])
+    ans
+    if pred == 0:
+        ans = "Sentado"
+    if pred == 1:
+        ans = "Sentado"
+    if pred == 2:
+        ans = "Sentado"
+    if pred == 3:
+        ans = "Sentado"
     return jsonify(actividad="sentado")
 
 if __name__ == '__main__':
